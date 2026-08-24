@@ -6,7 +6,7 @@ Aggregatore di annunci di case in vendita, ottimizzato mobile-first e responsive
 
 - Next.js (App Router) + TypeScript
 - Tailwind CSS
-- Prisma ORM + SQLite (facilmente migrabile a PostgreSQL)
+- Prisma ORM + PostgreSQL
 - Configurazione base PWA (manifest, icone, meta)
 
 ## Avvio in locale
@@ -23,19 +23,21 @@ npm install
 cp .env.example .env
 ```
 
-3. Crea il database e applica la migration:
+3. Configura `DATABASE_URL` nel file `.env` con un database PostgreSQL.
+
+4. Applica la migration:
 
 ```bash
 npx prisma migrate dev --name init
 ```
 
-4. Popola il database con annunci di esempio:
+5. Popola il database con annunci di esempio:
 
 ```bash
 npm run prisma:seed
 ```
 
-5. Avvia il server di sviluppo:
+6. Avvia il server di sviluppo:
 
 ```bash
 npm run dev

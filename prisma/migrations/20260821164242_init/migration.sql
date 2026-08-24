@@ -1,6 +1,6 @@
 -- CreateTable
 CREATE TABLE "Listing" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "id" SERIAL NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "price" INTEGER NOT NULL,
@@ -13,6 +13,8 @@ CREATE TABLE "Listing" (
     "imageUrl" TEXT,
     "sourceUrl" TEXT NOT NULL,
     "sourceName" TEXT NOT NULL,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Listing_pkey" PRIMARY KEY ("id")
 );
