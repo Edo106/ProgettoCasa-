@@ -46,12 +46,20 @@ export default async function Home({ searchParams }: PageProps<"/">) {
     ...(minRooms !== undefined ? { rooms: { gte: minRooms } } : {}),
   };
 
-  const listings = await prisma.listing.findMany({
-    where,
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+  let listings: Awaited<ReturnType<typeof prisma.listing.findMany>> = [];
+  let loadError = false;
+
+  try {
+    listings = await prisma.listing.findMany({
+      where,
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+  } catch (error) {
+    console.error("Errore nel caricamento degli annunci:", error);
+    loadError = true;
+  }
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
@@ -74,7 +82,11 @@ export default async function Home({ searchParams }: PageProps<"/">) {
         </div>
       </section>
 
-      {listings.length === 0 ? (
+      {loadError ? (
+        <p className="rounded-xl border border-red-200 bg-red-50 p-6 text-red-700">
+          Impossibile caricare gli annunci al momento. Riprova più tardi.
+        </p>
+      ) : listings.length === 0 ? (
         <p className="rounded-xl border border-zinc-200 bg-white p-6 text-zinc-600">
           Nessun annuncio trovato con i filtri selezionati.
         </p>

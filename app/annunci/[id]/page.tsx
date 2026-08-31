@@ -17,9 +17,15 @@ export default async function ListingDetailPage({ params }: PageProps<"/annunci/
     notFound();
   }
 
-  const listing = await prisma.listing.findUnique({
-    where: { id: numericId },
-  });
+  let listing;
+  try {
+    listing = await prisma.listing.findUnique({
+      where: { id: numericId },
+    });
+  } catch (error) {
+    console.error("Errore nel caricamento dell'annuncio:", error);
+    notFound();
+  }
 
   if (!listing) {
     notFound();
