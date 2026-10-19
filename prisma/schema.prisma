@@ -24,3 +24,45 @@ model Listing {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
+
+model Auction {
+  id           Int               @id @default(autoincrement())
+  externalId   String
+  source       String
+  url          String
+  title        String
+  city         String?
+  province     String?
+  propertyType String?
+  basePrice    Int?
+  minOffer     Int?
+  auctionDate  DateTime?
+  discoveredAt DateTime          @default(now())
+  notified     NotifiedAuction[]
+
+  @@unique([source, externalId])
+}
+
+model SearchFilter {
+  id           Int               @id @default(autoincrement())
+  city         String?
+  province     String?
+  propertyType String?
+  maxPrice     Int?
+  channel      String            @default("telegram")
+  chatId       String?
+  active       Boolean           @default(true)
+  createdAt    DateTime          @default(now())
+  notified     NotifiedAuction[]
+}
+
+model NotifiedAuction {
+  id        Int          @id @default(autoincrement())
+  auctionId Int
+  filterId  Int
+  sentAt    DateTime     @default(now())
+  auction   Auction      @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+  filter    SearchFilter @relation(fields: [filterId], references: [id], onDelete: Cascade)
+
+  @@unique([auctionId, filterId])
+}
