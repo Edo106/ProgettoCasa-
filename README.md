@@ -45,6 +45,45 @@ npm run dev
 
 Apri [http://localhost:3000](http://localhost:3000).
 
+## Autenticazione
+
+Gli annunci restano pubblici. I visitatori possono registrarsi con email e
+password (almeno 12 caratteri) oppure accedere con Google. Per gli account con
+password è richiesta la verifica dell'email; è disponibile anche il recupero
+della password.
+
+1. Configura PostgreSQL e `DATABASE_URL`, quindi applica tutte le migration:
+
+   ```bash
+   npx prisma migrate deploy
+   npm run prisma:generate
+   ```
+
+2. Nel file `.env` imposta:
+   - `BETTER_AUTH_URL`: l'URL pubblico del sito, per esempio `http://localhost:3000` in locale.
+   - `BETTER_AUTH_SECRET`: un segreto casuale di almeno 32 caratteri. Puoi generarlo con `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"`.
+   - `GOOGLE_CLIENT_ID` e `GOOGLE_CLIENT_SECRET`: credenziali OAuth di un'applicazione web configurata in Google Cloud.
+   - `RESEND_API_KEY`: chiave API di Resend.
+   - `AUTH_EMAIL_FROM`: mittente di un dominio verificato su Resend, per esempio `ProgettoCasa <accesso@tuo-dominio.it>`.
+
+3. In Google Cloud autorizza l'URI di callback
+   `http://localhost:3000/api/auth/callback/google` per lo sviluppo e
+   `https://<tuo-dominio>/api/auth/callback/google` per la produzione.
+   Configura anche la schermata di consenso OAuth e gli eventuali utenti di test.
+4. Su Vercel imposta le stesse variabili con URL e credenziali di produzione,
+   applica le migration al database e ridistribuisci l'applicazione. Non
+   inserire segreti nei file tracciati da Git.
+
+Le email vengono inviate in background: controlla i log del server se la
+consegna fallisce. Il limite di richieste per l'autenticazione è memorizzato
+nel database. Su Vercel usa l'indirizzo IP fornito dal proxy Vercel; negli altri
+ambienti tutte le richieste condividono il limite, salvo un'integrazione con un
+proxy attendibile. Non esporre un'istanza di produzione dietro un proxy non
+configurato.
+
+Se PowerShell blocca `npm.ps1`, sostituisci `npm` con `npm.cmd` e `npx` con
+`npx.cmd` nei comandi sopra.
+
 ## Script utili
 
 - `npm run dev` – sviluppo

@@ -1,6 +1,50 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
 
 export function Header() {
+  const { data: session, isPending, error } = authClient.useSession();
+  const router = useRouter();
+  const [logoutError, setLogoutError] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  async function signOut() {
+    setLogoutError(false);
+    setLoggingOut(true);
+    try {
+      const result = await authClient.signOut();
+      if (result.error) {
+        setLogoutError(true);
+        return;
+      }
+      router.refresh();
+    } catch (error) {
+      console.error("Logout non riuscito:", error);
+      setLogoutError(true);
+    } finally {
+      setLoggingOut(false);
+    }
+  }
+
+  const accountLinks = isPending ? (
+    <span>Caricamento account...</span>
+  ) : error ? (
+    <span role="alert">Account non disponibile</span>
+  ) : session ? (
+    <>
+      <span>Ciao, {session.user.name}</span>
+      <button type="button" onClick={signOut} disabled={loggingOut} className="hover:text-zinc-900 disabled:opacity-50">
+        {loggingOut ? "Uscita..." : "Esci"}
+      </button>
+      {logoutError && <span role="alert">Uscita non riuscita. Riprova.</span>}
+    </>
+  ) : (
+    <Link href="/accedi" className="hover:text-zinc-900">Accedi</Link>
+  );
+
   return (
     <header className="border-b border-zinc-200 bg-white">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
@@ -12,6 +56,7 @@ export function Header() {
           <Link href="/" className="hover:text-zinc-900">
             Annunci
           </Link>
+          {accountLinks}
         </nav>
 
         <details className="relative md:hidden">
@@ -25,6 +70,9 @@ export function Header() {
             >
               Annunci
             </Link>
+            <div className="flex flex-col gap-2 px-2 py-1.5 text-sm text-zinc-700">
+              {accountLinks}
+            </div>
           </div>
         </details>
       </div>
