@@ -23,7 +23,10 @@ npm install
 cp .env.example .env
 ```
 
-3. Configura `DATABASE_URL` nel file `.env` con un database PostgreSQL.
+3. Configura `DATABASE_URL` nel file `.env` con un database PostgreSQL. Per
+   mostrare un recapito nella pagina Contatti, imposta anche `CONTACT_EMAIL`
+   con l'indirizzo email pubblico; se non è impostato o non è valido, la pagina
+   indica che il recapito non è disponibile.
 
 4. Applica la migration:
 
@@ -65,14 +68,16 @@ della password.
    - `GOOGLE_CLIENT_ID` e `GOOGLE_CLIENT_SECRET`: credenziali OAuth di un'applicazione web configurata in Google Cloud.
    - `RESEND_API_KEY`: chiave API di Resend.
    - `AUTH_EMAIL_FROM`: mittente di un dominio verificato su Resend, per esempio `ProgettoCasa <accesso@tuo-dominio.it>`.
+   - `CONTACT_EMAIL`: indirizzo pubblico mostrato nella pagina Contatti (facoltativo).
 
 3. In Google Cloud autorizza l'URI di callback
    `http://localhost:3000/api/auth/callback/google` per lo sviluppo e
    `https://<tuo-dominio>/api/auth/callback/google` per la produzione.
    Configura anche la schermata di consenso OAuth e gli eventuali utenti di test.
 4. Su Vercel imposta le stesse variabili con URL e credenziali di produzione,
-   applica le migration al database e ridistribuisci l'applicazione. Non
-   inserire segreti nei file tracciati da Git.
+   applica le migration al database e ridistribuisci l'applicazione. Imposta
+   `CONTACT_EMAIL` se vuoi mostrare il recapito pubblico. Non inserire segreti
+   nei file tracciati da Git.
 
 Le email vengono inviate in background: controlla i log del server se la
 consegna fallisce. Il limite di richieste per l'autenticazione è memorizzato
