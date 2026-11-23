@@ -25,6 +25,84 @@ model Listing {
   updatedAt    DateTime @updatedAt
 }
 
+enum AuctionSnapshotState {
+  collecting
+  complete
+  failed
+}
+
+enum AuctionSyncRunState {
+  running
+  succeeded
+  failed
+}
+
+model AuctionSnapshot {
+  id                  String                  @id @default(cuid())
+  collectionId        String                  @default("pvp")
+  createdAt           DateTime                @default(now())
+  completedAt         DateTime?
+  retiredAt           DateTime?
+  sourceRecordCount   Int                     @default(0)
+  propertyRecordCount Int                     @default(0)
+  state               AuctionSnapshotState    @default(collecting)
+  announcements       AuctionAnnouncement[]
+  run                 AuctionSyncRun?
+  activeCollection    AuctionCollectionState? @relation("ActiveAuctionSnapshot")
+
+  @@index([collectionId, state, retiredAt])
+}
+
+model AuctionAnnouncement {
+  id               String          @id @default(cuid())
+  snapshotId       String
+  sourceId         String
+  sourceUrl        String
+  description      String?
+  city             String?
+  province         String?
+  address          String?
+  startingPrice    Decimal?        @db.Decimal(14, 2)
+  auctionAt        DateTime?
+  status           String?
+  propertyCategory String
+  snapshot         AuctionSnapshot @relation(fields: [snapshotId], references: [id], onDelete: Cascade)
+
+  @@unique([snapshotId, sourceId])
+  @@index([snapshotId, city])
+  @@index([snapshotId, startingPrice])
+  @@index([snapshotId, auctionAt, sourceId])
+}
+
+model AuctionSyncRun {
+  id               String                  @id @default(cuid())
+  snapshotId       String                  @unique
+  startedAt        DateTime                @default(now())
+  finishedAt       DateTime?
+  state            AuctionSyncRunState     @default(running)
+  errorSummary     String?
+  leaseOwner       String
+  leaseExpiresAt   DateTime
+  fencingToken     BigInt
+  pagesProcessed   Int                     @default(0)
+  recordsProcessed Int                     @default(0)
+  snapshot         AuctionSnapshot         @relation(fields: [snapshotId], references: [id], onDelete: Cascade)
+  latestCollection AuctionCollectionState? @relation("LatestAuctionRun")
+}
+
+model AuctionCollectionState {
+  id               String               @id @default("pvp")
+  activeSnapshotId String?              @unique
+  lastSuccessfulAt DateTime?
+  latestRunId      String?              @unique
+  latestRunState   AuctionSyncRunState?
+  leaseOwner       String?
+  leaseExpiresAt   DateTime?
+  fencingToken     BigInt               @default(0)
+  activeSnapshot   AuctionSnapshot?     @relation("ActiveAuctionSnapshot", fields: [activeSnapshotId], references: [id], onDelete: SetNull)
+  latestRun        AuctionSyncRun?      @relation("LatestAuctionRun", fields: [latestRunId], references: [id], onDelete: SetNull)
+}
+
 model User {
   id            String    @id
   name          String
