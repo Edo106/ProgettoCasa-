@@ -95,7 +95,7 @@ Se PowerShell blocca `npm.ps1`, sostituisci `npm` con `npm.cmd` e `npx` con
 ## Script utili
 
 - `npm run dev` – sviluppo
-- `npm run build` – build produzione
+- `npm run build` – genera Prisma Client e crea la build di produzione
 - `npm run start` – avvio produzione
 - `npm run lint` – linting
 - `npm run prisma:generate` – genera Prisma Client
