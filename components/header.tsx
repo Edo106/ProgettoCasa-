@@ -56,6 +56,9 @@ export function Header() {
           <Link href="/" className="hover:text-zinc-900">
             Annunci
           </Link>
+          <Link href="/aste" className="hover:text-zinc-900">
+            Aste
+          </Link>
           {accountLinks}
         </nav>
 
@@ -69,6 +72,12 @@ export function Header() {
               className="block rounded-md px-2 py-1.5 text-sm text-zinc-700 hover:bg-zinc-100"
             >
               Annunci
+            </Link>
+            <Link
+              href="/aste"
+              className="block rounded-md px-2 py-1.5 text-sm text-zinc-700 hover:bg-zinc-100"
+            >
+              Aste
             </Link>
             <div className="flex flex-col gap-2 px-2 py-1.5 text-sm text-zinc-700">
               {accountLinks}
