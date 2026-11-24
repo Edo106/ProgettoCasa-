@@ -1,4 +1,7 @@
-# ProgettoCasa
+---
+title: ProgettoCasa
+description: Aggregatore mobile-first di annunci immobiliari e aste
+---
 
 Aggregatore di annunci di case in vendita, ottimizzato mobile-first e responsive da smartphone a desktop.
 
@@ -98,6 +101,41 @@ Se PowerShell blocca `npm.ps1`, sostituisci `npm` con `npm.cmd` e `npx` con
 - `npm run prisma:generate` – genera Prisma Client
 - `npm run prisma:migrate` – esegue migration in sviluppo
 - `npm run prisma:seed` – esegue seed database
+
+## Aste immobiliari
+
+La pagina `/aste` mostra gli annunci immobiliari raccolti dal Portale delle
+Vendite Pubbliche. Consente di filtrare per città, prezzo e data e rimanda
+all'annuncio originale per le informazioni ufficiali.
+
+1. Configura `DATABASE_URL` nel file `.env` per il database PostgreSQL.
+2. Applica le migration e genera il client Prisma:
+
+   ```powershell
+   npx prisma migrate deploy
+   npm run prisma:generate
+   ```
+
+3. Esegui un aggiornamento:
+
+   ```powershell
+   npx tsx scripts/sync-auctions.ts
+   ```
+
+L'aggiornamento può richiedere molto tempo perché il portale restituisce molte
+pagine. La pagina non mostra annunci prima del primo aggiornamento completato.
+Se un aggiornamento fallisce, conserva gli ultimi risultati completi e mostra
+un avviso; i risultati più vecchi di 24 ore sono segnalati come non aggiornati.
+Il comando restituisce un codice di errore in caso di fallimento.
+
+Per eseguire aggiornamenti almeno giornalieri, configura un sistema di
+pianificazione nell'ambiente di distribuzione che esegua lo stesso comando con
+`DATABASE_URL` disponibile. Il progetto non configura automaticamente uno
+scheduler di produzione.
+
+Il controllo delle pagine e dei duplicati rileva alcune anomalie, ma non
+garantisce che il portale restituisca tutte le inserzioni in un'istantanea
+coerente mentre i dati cambiano. La copertura completa non è verificata.
 
 ## Setup database da Vercel (senza locale)
 
